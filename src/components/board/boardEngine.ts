@@ -75,3 +75,23 @@ export function squareToCoords(sq: Square): { fi: number; ri: number } {
     ri: parseInt(sq[1]!, 10) - 1,
   };
 }
+
+/** Build a square name from file/rank indices (0–7). */
+export function coordsToSquare(fi: number, ri: number): Square {
+  return (FILES[fi]! + RANKS[ri]!) as Square;
+}
+
+/**
+ * Whose turn is it after `n` plies have been played? White moves first.
+ */
+export function sideToMove(n: number): "w" | "b" {
+  return n % 2 === 0 ? "w" : "b";
+}
+
+/** Find the non-captured piece currently on `square`, or undefined. */
+export function pieceAt(
+  pieces: BoardPiece[],
+  square: Square,
+): BoardPiece | undefined {
+  return pieces.find((p) => !p.captured && p.square === square);
+}

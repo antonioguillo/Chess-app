@@ -13,7 +13,11 @@ import { TabBar } from "./TabBar";
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const hideTabBar = pathname.startsWith("/apertura/");
+  const hideTabBar =
+    pathname.startsWith("/apertura/") ||
+    pathname.startsWith("/practica/memoria/") ||
+    pathname.startsWith("/practica/jugada/") ||
+    pathname === "/practica/identifica";
 
   return (
     <div

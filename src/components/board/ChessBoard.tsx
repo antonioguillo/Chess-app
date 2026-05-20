@@ -1,6 +1,15 @@
-import type { BoardPiece, Move } from "@/lib/types";
+"use client";
+
+import type { BoardPiece, Move, Square } from "@/lib/types";
 import { FILES, RANKS, squareToCoords } from "./boardEngine";
 import { Piece } from "./Piece";
+
+export type HighlightTone = "selected" | "success" | "error" | "hint";
+
+export interface SquareHighlight {
+  square: Square;
+  tone: HighlightTone;
+}
 
 interface Props {
   pieces: BoardPiece[];
@@ -8,7 +17,33 @@ interface Props {
   size?: number;
   showCoords?: boolean;
   frame?: boolean;
+  /** When provided, each square becomes clickable. */
+  onSquareClick?: (square: Square) => void;
+  /** Highlights drawn on top of the corresponding squares (e.g. selection). */
+  highlights?: SquareHighlight[];
 }
+
+const HIGHLIGHT_STYLES: Record<
+  HighlightTone,
+  { bg: string; border: string }
+> = {
+  selected: {
+    bg: "rgba(199, 155, 101, 0.42)",
+    border: "rgba(199, 155, 101, 0.85)",
+  },
+  success: {
+    bg: "rgba(120, 180, 110, 0.42)",
+    border: "rgba(140, 200, 130, 0.85)",
+  },
+  error: {
+    bg: "rgba(180, 70, 60, 0.42)",
+    border: "rgba(220, 100, 90, 0.85)",
+  },
+  hint: {
+    bg: "rgba(217, 184, 122, 0.28)",
+    border: "rgba(217, 184, 122, 0.7)",
+  },
+};
 
 /**
  * Renders an 8×8 chess board with a stable, transform-animated pieces layer.
@@ -17,6 +52,9 @@ interface Props {
  * `piece.id`. When the same piece object moves to a new square it stays in the
  * DOM and React only updates the transform — the CSS transition takes over and
  * the piece slides. Re-creating piece nodes on every ply would break this.
+ *
+ * Pass `onSquareClick` and `highlights` to use the board interactively
+ * (practice modes). The highlights layer sits between the squares and pieces.
  */
 export function ChessBoard({
   pieces,
@@ -24,19 +62,27 @@ export function ChessBoard({
   size = 320,
   showCoords = true,
   frame = true,
+  onSquareClick,
+  highlights,
 }: Props) {
   const sq = size / 8;
+
+  const highlightMap = new Map<Square, HighlightTone>(
+    highlights?.map((h) => [h.square, h.tone]),
+  );
 
   const squares: React.ReactNode[] = [];
   for (let ri = 7; ri >= 0; ri--) {
     for (let fi = 0; fi < 8; fi++) {
       const dark = (ri + fi) % 2 === 0;
-      const name = `${FILES[fi]}${RANKS[ri]}`;
+      const name = `${FILES[fi]}${RANKS[ri]}` as Square;
       const isLast =
         lastMove && (lastMove.from === name || lastMove.to === name);
+      const highlight = highlightMap.get(name);
       squares.push(
         <div
           key={name}
+          onClick={onSquareClick ? () => onSquareClick(name) : undefined}
           style={{
             position: "absolute",
             left: fi * sq,
@@ -47,6 +93,7 @@ export function ChessBoard({
             boxShadow: dark
               ? "inset 0 0 0 0.5px rgba(0,0,0,0.05)"
               : "inset 0 0 0 0.5px rgba(0,0,0,0.02)",
+            cursor: onSquareClick ? "pointer" : "default",
           }}
         >
           {isLast && (
@@ -56,6 +103,16 @@ export function ChessBoard({
                 inset: 0,
                 background: "rgba(199, 155, 101, 0.42)",
                 boxShadow: "inset 0 0 0 1.5px rgba(199, 155, 101, 0.85)",
+              }}
+            />
+          )}
+          {highlight && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: HIGHLIGHT_STYLES[highlight].bg,
+                boxShadow: `inset 0 0 0 1.5px ${HIGHLIGHT_STYLES[highlight].border}`,
               }}
             />
           )}
@@ -71,6 +128,7 @@ export function ChessBoard({
                 color: dark
                   ? "rgba(241,234,215,0.55)"
                   : "rgba(30,22,14,0.5)",
+                pointerEvents: "none",
               }}
             >
               {RANKS[ri]}
@@ -88,6 +146,7 @@ export function ChessBoard({
                 color: dark
                   ? "rgba(241,234,215,0.55)"
                   : "rgba(30,22,14,0.5)",
+                pointerEvents: "none",
               }}
             >
               {FILES[fi]}

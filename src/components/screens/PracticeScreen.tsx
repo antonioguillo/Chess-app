@@ -1,36 +1,56 @@
 "use client";
 
+import Link from "next/link";
+import { useMemo } from "react";
 import { TopBar } from "@/components/chrome/TopBar";
+import { Icon } from "@/components/ui/Icon";
+import { useUserProgress } from "@/lib/progress";
+import type { PracticeMode } from "@/lib/types";
 
-interface Exercise {
-  id: string;
+interface ModeCard {
+  id: PracticeMode;
   title: string;
   subtitle: string;
-  count: string;
+  href: string;
 }
 
-const EXERCISES: Exercise[] = [
+const MODES: ModeCard[] = [
   {
-    id: "memory",
+    id: "memoria",
     title: "Reproducir de memoria",
     subtitle: "Juega la línea principal sin pistas.",
-    count: "12 ejercicios",
+    href: "/practica/memoria",
   },
   {
-    id: "identify",
+    id: "identifica",
     title: "Adivina la apertura",
     subtitle: "Identifica la apertura por la posición.",
-    count: "24 ejercicios",
+    href: "/practica/identifica",
   },
   {
-    id: "find-move",
+    id: "jugada",
     title: "Encuentra la jugada",
     subtitle: "Elige el movimiento característico.",
-    count: "36 ejercicios",
+    href: "/practica/jugada",
   },
 ];
 
 export function PracticeScreen() {
+  const { progress } = useUserProgress();
+
+  const summary = useMemo(() => {
+    const totals = MODES.reduce(
+      (acc, m) => {
+        const s = progress.practice[m.id];
+        acc.correct += s.correct;
+        acc.attempts += s.attempts;
+        return acc;
+      },
+      { correct: 0, attempts: 0 },
+    );
+    return totals;
+  }, [progress]);
+
   return (
     <div style={{ paddingBottom: 120 }}>
       <TopBar
@@ -72,6 +92,29 @@ export function PracticeScreen() {
           características de cada apertura.
         </p>
 
+        {summary.attempts > 0 && (
+          <div
+            style={{
+              marginTop: 18,
+              padding: "12px 14px",
+              background: "var(--surface)",
+              border: "1px solid var(--line)",
+              borderRadius: 12,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Stat label="aciertos" value={summary.correct.toString()} />
+            <div style={{ width: 1, background: "var(--line)" }} />
+            <Stat label="intentos" value={summary.attempts.toString()} />
+            <div style={{ width: 1, background: "var(--line)" }} />
+            <Stat
+              label="precisión"
+              value={`${Math.round((summary.correct / summary.attempts) * 100)}%`}
+            />
+          </div>
+        )}
+
         <div
           style={{
             marginTop: 22,
@@ -80,84 +123,114 @@ export function PracticeScreen() {
             gap: 12,
           }}
         >
-          {EXERCISES.map((c) => (
-            <div
-              key={c.id}
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--line)",
-                borderRadius: 14,
-                padding: 16,
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-              }}
-            >
-              <div
+          {MODES.map((c) => {
+            const s = progress.practice[c.id];
+            const count = s.attempts;
+            const countLabel =
+              count === 0
+                ? "Sin intentos todavía"
+                : `${s.correct} / ${s.attempts}`;
+            return (
+              <Link
+                key={c.id}
+                href={c.href}
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  background: "rgba(199,155,101,0.13)",
-                  border: "1px solid rgba(199,155,101,0.3)",
+                  background: "var(--surface)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 14,
+                  padding: 16,
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--gold)",
-                  fontFamily: "var(--serif)",
-                  fontStyle: "italic",
-                  fontSize: 18,
+                  gap: 14,
+                  textDecoration: "none",
+                  color: "var(--ink)",
                 }}
               >
-                ♞
-              </div>
-              <div style={{ flex: 1 }}>
                 <div
                   style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 22,
+                    background: "rgba(199,155,101,0.13)",
+                    border: "1px solid rgba(199,155,101,0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--gold)",
                     fontFamily: "var(--serif)",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    color: "var(--ink)",
+                    fontStyle: "italic",
+                    fontSize: 18,
                   }}
                 >
-                  {c.title}
+                  ♞
                 </div>
-                <div
-                  style={{
-                    fontSize: 11.5,
-                    color: "var(--ink-mute)",
-                    marginTop: 2,
-                  }}
-                >
-                  {c.subtitle}
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontFamily: "var(--serif)",
+                      fontSize: 16,
+                      fontWeight: 500,
+                      color: "var(--ink)",
+                    }}
+                  >
+                    {c.title}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      color: "var(--ink-mute)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {c.subtitle}
+                  </div>
+                  <div
+                    className="mono"
+                    style={{
+                      fontSize: 9.5,
+                      color: "var(--ink-faint)",
+                      marginTop: 4,
+                      letterSpacing: 0.3,
+                    }}
+                  >
+                    {countLabel.toUpperCase()}
+                  </div>
                 </div>
-                <div
-                  className="mono"
-                  style={{
-                    fontSize: 9.5,
-                    color: "var(--ink-faint)",
-                    marginTop: 4,
-                    letterSpacing: 0.3,
-                  }}
-                >
-                  {c.count.toUpperCase()}
-                </div>
-              </div>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                style={{ color: "var(--ink-faint)" }}
-              >
-                <path d="M9 6l6 6-6 6" />
-              </svg>
-            </div>
-          ))}
+                <span style={{ color: "var(--ink-faint)" }}>
+                  <Icon name="chevron-right" size={14} />
+                </span>
+              </Link>
+            );
+          })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div
+        style={{
+          fontFamily: "var(--serif)",
+          fontSize: 20,
+          fontWeight: 500,
+          color: "var(--ink)",
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </div>
+      <div
+        className="tab-label"
+        style={{
+          fontSize: 9,
+          color: "var(--ink-mute)",
+          marginTop: 3,
+        }}
+      >
+        {label}
       </div>
     </div>
   );

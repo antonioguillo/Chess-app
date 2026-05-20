@@ -1,23 +1,47 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { OpeningProgress, UserProgress } from "@/lib/types";
+import type {
+  OpeningProgress,
+  PracticeMode,
+  PracticeModeStats,
+  UserProgress,
+} from "@/lib/types";
 
 const STORAGE_KEY = "gambito.progress.v1";
+
+const EMPTY_PRACTICE: PracticeModeStats = { attempts: 0, correct: 0 };
 
 const EMPTY: UserProgress = {
   openings: {},
   streakDays: 0,
   lastOpenedDate: null,
+  practice: {
+    memoria: { ...EMPTY_PRACTICE },
+    identifica: { ...EMPTY_PRACTICE },
+    jugada: { ...EMPTY_PRACTICE },
+  },
 };
+
+function withDefaults(p: Partial<UserProgress>): UserProgress {
+  return {
+    ...EMPTY,
+    ...p,
+    openings: { ...(p.openings ?? {}) },
+    practice: {
+      memoria: { ...EMPTY_PRACTICE, ...(p.practice?.memoria ?? {}) },
+      identifica: { ...EMPTY_PRACTICE, ...(p.practice?.identifica ?? {}) },
+      jugada: { ...EMPTY_PRACTICE, ...(p.practice?.jugada ?? {}) },
+    },
+  };
+}
 
 function loadFromStorage(): UserProgress {
   if (typeof window === "undefined") return EMPTY;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as UserProgress;
-    return { ...EMPTY, ...parsed, openings: { ...parsed.openings } };
+    return withDefaults(JSON.parse(raw) as Partial<UserProgress>);
   } catch {
     return EMPTY;
   }
@@ -100,9 +124,51 @@ export function useUserProgress() {
     [],
   );
 
+  /**
+   * Record the outcome of a practice session.
+   *
+   * @param mode  Which exercise mode.
+   * @param correct  Number of correct answers / moves.
+   * @param attempts  Total questions / moves attempted.
+   * @param scoreMetric  Optional "score" to track personal best (e.g. mistakes;
+   *   lower is better). Stored only if improved.
+   */
+  const recordPractice = useCallback(
+    (
+      mode: PracticeMode,
+      correct: number,
+      attempts: number,
+      scoreMetric?: number,
+    ) => {
+      setState((prev) => {
+        const cur = prev.practice[mode];
+        const bestScore =
+          scoreMetric === undefined
+            ? cur.bestScore
+            : cur.bestScore === undefined
+              ? scoreMetric
+              : Math.min(cur.bestScore, scoreMetric);
+        const next: UserProgress = {
+          ...prev,
+          practice: {
+            ...prev.practice,
+            [mode]: {
+              attempts: cur.attempts + attempts,
+              correct: cur.correct + correct,
+              bestScore,
+            },
+          },
+        };
+        saveToStorage(next);
+        return next;
+      });
+    },
+    [],
+  );
+
   const reset = useCallback(() => persist(EMPTY), [persist]);
 
-  return { progress: state, recordView, reset };
+  return { progress: state, recordView, recordPractice, reset };
 }
 
 export function summarize(progress: UserProgress) {

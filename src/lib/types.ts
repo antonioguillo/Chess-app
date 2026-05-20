@@ -52,6 +52,13 @@ export interface Opening {
   description: string;
   idea: string;
   moves: Move[];
+  /**
+   * 0-based index into `moves` of the move that defines this opening (e.g.
+   * Ab5 for Ruy López, Ag7 for King's Indian). Used by the "Encuentra la
+   * jugada" practice mode and may be surfaced elsewhere as the signature
+   * move of the line.
+   */
+  characteristicMoveIndex: number;
 }
 
 export interface Family {
@@ -76,8 +83,18 @@ export interface OpeningProgress {
   lastViewedAt: string; // ISO timestamp
 }
 
+export type PracticeMode = "memoria" | "identifica" | "jugada";
+
+export interface PracticeModeStats {
+  attempts: number;
+  correct: number;
+  /** Personal best by mode-specific metric (lower = better for mistakes). */
+  bestScore?: number;
+}
+
 export interface UserProgress {
   openings: Record<string, OpeningProgress>;
   streakDays: number;
   lastOpenedDate: string | null; // YYYY-MM-DD
+  practice: Record<PracticeMode, PracticeModeStats>;
 }

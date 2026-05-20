@@ -36,6 +36,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "a7", to: "a6", san: "a6", note: "La variante Morphy. Las negras cuestionan al alfil de inmediato." },
       { from: "b5", to: "a4", san: "Aa4", note: "El alfil se retira manteniendo la presión a distancia." },
     ],
+    characteristicMoveIndex: 4,
   },
   {
     id: "italian",
@@ -61,6 +62,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "f1", to: "c4", san: "Ac4", note: "El alfil apunta directo a f7, el cuadro más débil de las negras." },
       { from: "g8", to: "f6", san: "Cf6", note: "La defensa Dos Caballos. Las negras desarrollan atacando e4." },
     ],
+    characteristicMoveIndex: 4,
   },
   {
     id: "sicilian",
@@ -89,6 +91,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "g8", to: "f6", san: "Cf6", note: "Atacando e4 y desarrollando." },
       { from: "b1", to: "c3", san: "Cc3", note: "Defendiendo e4. Llegamos a la posición base de la Siciliana Abierta." },
     ],
+    characteristicMoveIndex: 1,
   },
   {
     id: "french",
@@ -114,6 +117,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "b1", to: "c3", san: "Cc3", note: "Variante Clásica. Defendiendo e4 con desarrollo." },
       { from: "g8", to: "f6", san: "Cf6", note: "Presionando el peón e4 una vez más." },
     ],
+    characteristicMoveIndex: 1,
   },
   {
     id: "caro-kann",
@@ -140,6 +144,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "d5", to: "e4", san: "dxe4", note: "Captura habitual — simplificando el centro." },
       { from: "c3", to: "e4", san: "Cxe4", note: "Recapturando. Posición base de la Caro-Kann Clásica." },
     ],
+    characteristicMoveIndex: 1,
   },
   {
     id: "queens-gambit",
@@ -165,6 +170,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "b1", to: "c3", san: "Cc3", note: "Desarrollo presionando d5." },
       { from: "g8", to: "f6", san: "Cf6", note: "Desarrollo natural — Variante Ortodoxa." },
     ],
+    characteristicMoveIndex: 2,
   },
   {
     id: "kings-indian",
@@ -192,6 +198,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "e2", to: "e4", san: "e4", note: "Las blancas aceptan el reto y ocupan el centro." },
       { from: "d7", to: "d6", san: "d6", note: "Preparando ...e5 o ...c5 para romper el centro." },
     ],
+    characteristicMoveIndex: 3,
   },
   {
     id: "london",
@@ -216,6 +223,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "g8", to: "f6", san: "Cf6", note: "Desarrollo simétrico." },
       { from: "c1", to: "f4", san: "Af4", note: "La jugada característica: alfil fuera antes de cerrarlo con e3." },
     ],
+    characteristicMoveIndex: 4,
   },
   {
     id: "english",
@@ -240,6 +248,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "g8", to: "f6", san: "Cf6", note: "Desarrollo simétrico." },
       { from: "g1", to: "f3", san: "Cf3", note: "Desarrollo armonioso de las dos piezas menores." },
     ],
+    characteristicMoveIndex: 0,
   },
   {
     id: "scandinavian",
@@ -265,6 +274,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "b1", to: "c3", san: "Cc3", note: "Atacando la dama con tempo." },
       { from: "d5", to: "a5", san: "Da5", note: "La retirada principal — la dama mantiene presión en la diagonal." },
     ],
+    characteristicMoveIndex: 1,
   },
   {
     id: "nimzo-indian",
@@ -290,6 +300,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "b1", to: "c3", san: "Cc3", note: "Desarrollo central." },
       { from: "f8", to: "b4", san: "Ab4", note: "La clavada Nimzo — pieza por estructura." },
     ],
+    characteristicMoveIndex: 5,
   },
   {
     id: "pirc",
@@ -315,6 +326,7 @@ export const OPENINGS: readonly Opening[] = [
       { from: "b1", to: "c3", san: "Cc3", note: "Defendiendo e4." },
       { from: "g7", to: "g6", san: "g6", note: "Preparando el fianchetto — marca de la Pirc." },
     ],
+    characteristicMoveIndex: 5,
   },
 ] as const;
 
