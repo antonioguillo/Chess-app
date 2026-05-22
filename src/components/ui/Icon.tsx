@@ -18,7 +18,8 @@ export type IconName =
   | "next"
   | "reset"
   | "play"
-  | "pause";
+  | "pause"
+  | "puzzle";
 
 interface Props {
   name: IconName;
@@ -128,6 +129,12 @@ export function Icon({ name, size = 18, strokeWidth = 1.7 }: Props) {
         <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
           <rect x="6" y="5" width="4" height="14" />
           <rect x="14" y="5" width="4" height="14" />
+        </svg>
+      );
+    case "puzzle":
+      return (
+        <svg {...common}>
+          <path d="M9 3h6v3a1.5 1.5 0 0 0 3 0V3h3v6h-3a1.5 1.5 0 0 0 0 3h3v6h-3v-3a1.5 1.5 0 0 0-3 0v3H9v-3a1.5 1.5 0 0 0-3 0v3H3v-6h3a1.5 1.5 0 0 0 0-3H3V3h3v3a1.5 1.5 0 0 0 3 0V3z" />
         </svg>
       );
   }

@@ -98,3 +98,47 @@ export interface UserProgress {
   lastOpenedDate: string | null; // YYYY-MM-DD
   practice: Record<PracticeMode, PracticeModeStats>;
 }
+
+// ─── Bobby Fischer Teaches Chess ─────────────────────────────────────────────
+
+export type FischerTheme =
+  | "back-rank"
+  | "double-attack"
+  | "pin"
+  | "queen-knight"
+  | "clearance"
+  | "interference";
+
+export interface FischerPuzzle {
+  id: string;
+  /** Chapter number from the book (1-based). */
+  chapter: number;
+  /** Chapter title in Spanish. */
+  chapterTitle: string;
+  theme: FischerTheme;
+  /** Number of moves to mate / best continuation. */
+  movesToSolve: number;
+  /** Board position: square → piece type. Only occupied squares needed. */
+  position: Partial<Record<Square, PieceType>>;
+  /** Which side moves first in this puzzle. */
+  sideToMove: "w" | "b";
+  /** Correct move sequence (from→to pairs). First entry is what the user plays. */
+  solution: Array<{ from: Square; to: Square; san: string }>;
+  /** Short hint shown when the user asks for help. */
+  hint: string;
+  /** Explanation shown after solving. */
+  explanation: string;
+}
+
+export interface FischerChapter {
+  number: number;
+  title: string;
+  theme: FischerTheme;
+  description: string;
+}
+
+export interface FischerProgress {
+  solved: string[];        // puzzle IDs solved at least once
+  solvedFirst: string[];   // puzzle IDs solved on the first try
+  lastSolvedAt: string | null;
+}
