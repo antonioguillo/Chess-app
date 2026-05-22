@@ -14,6 +14,7 @@ const ITEMS: Item[] = [
   { href: "/", label: "Inicio", icon: "home" },
   { href: "/biblioteca", label: "Biblioteca", icon: "book" },
   { href: "/practica", label: "Práctica", icon: "target" },
+  { href: "/fischer", label: "Fischer", icon: "puzzle" },
 ];
 
 function isActive(href: string, pathname: string): boolean {
